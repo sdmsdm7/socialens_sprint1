@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} - SociaLens</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body, html {
+            height: 100%;
+        }
+        .wrapper {
+            display: flex;
+            height: 100%;
+        }
+        .sidebar {
+            min-width: 250px;
+            background: #003B7A;
+            padding: 15px;
+        }
+        .sidebar .nav-link {
+            color: white;
+            transition: color 0.3s; 
+        }
+        .sidebar .nav-link:hover {
+            color: #cccccc; 
+        }
+        .content {
+            flex-grow: 1;
+            background: #f8f9fa;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <nav class="sidebar">
+        <h3 class="text-white">SociaLens Ɑv.1.0</h3>
+        <ul class="nav flex-column">
+            <li class="nav-item"><a href="/" class="nav-link">🏠 Home</a></li>
+            <li class="nav-item"><a href="/data-upload" class="nav-link">☁️ Data Upload</a></li>
+            <li class="nav-item"><a href="/datasets" class="nav-link">📀 Datasets</a></li>
+            <li class="nav-item"><a href="/descriptive-statistics" class="nav-link">📊 Descriptive Statistics</a></li>
+            <li class="nav-item"><a href="/network-visualiser" class="nav-link">🕸️ Network Visualiser</a></li>
+            <li class="nav-item"><a href="/report-generator" class="nav-link">📄 Report Generator</a></li>
+        </ul>
+    </nav>
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}View Statistics{% endblock %}
+
+{% block content %}
+<h1>Statistics for {{ filename }}</h1>
+<div class="container">
+    <div class="card my-3">
+        <div class="card-header">
+            Summary Statistics
+        </div>
+        <div class="card-body">
+            <p class="card-text">{{ results.affiliations_count }}</p>
+            <p class="card-text">{{ results.participants_count }}</p>
+            <h5>Averages:</h5>
+            {% for key, value in results.averages.items() %}
+            <p class="card-text">{{ value }}</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

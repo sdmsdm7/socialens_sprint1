@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Data Upload{% endblock %}
+
+{% block content %}
+    <h1>Data Upload</h1>
+    <p>Feed me some data please. 🤗</p>
+
+    <!-- Display flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="dataFile" class="form-label">Choose a file to upload</label>
+            <input type="file" class="form-control" id="dataFile" name="dataFile" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+{% endblock %}
