@@ -8,43 +8,81 @@
     <style>
         body, html {
             height: 100%;
+            margin: 0;
         }
+    
         .wrapper {
             display: flex;
             height: 100%;
         }
+
+        .top-bar {
+            width: 100%;
+            background-color: #013B7A; /* Deep blue background for the top bar */
+            color: white;
+            padding: 5px 20px; /* Minimal padding for a narrow bar */
+            text-align: left;
+        }
+    
         .sidebar {
             min-width: 250px;
-            background: #003B7A;
-            padding: 15px;
-        }
-        .sidebar .nav-link {
+            background: #013B7A; /* Consistent background color */
             color: white;
-            transition: color 0.3s; 
+            padding: 15px;
+            position: sticky; /* Make sidebar sticky */
+            top: 0; /* Start sticking at the top of the viewport */
+            height: 100vh; /* Optional: to make the sidebar take full viewport height */
+            overflow-y: auto; /* Optional: allows scrolling within the sidebar if content is long */
+    }
+
+    .sidebar h3 {
+            margin-bottom: 20px;
+    }
+    
+        .nav-link {
+            color: white;
+            padding: 10px 15px; /* Fixed padding applied to all states */
+            display: block; /* Ensures the link takes up the full available width */
+            transition: background-color 0.3s ease-in-out, border-radius 0.3s ease-in-out; /* Smooth transition for visual effects */
+            border-radius: 20px; /* Initial rounded corner for uniform appearance */
+            margin: 2px 0; /* Small margin to separate items slightly */
         }
-        .sidebar .nav-link:hover {
-            color: #cccccc; 
+    
+        .nav-link:hover, .active .nav-link {
+            background-color: white;
+            color: #013B7A; /* Text color changes to blue for better contrast */
+            padding: 10px 15px; /* Padding remains constant to prevent movement */
+            border-radius: 20px; /* Increased border-radius on hover for a softer look */
         }
+    
         .content {
             flex-grow: 1;
             background: #f8f9fa;
             padding: 20px;
         }
     </style>
+    
+    
 </head>
 <body>
+    <div class="top-bar">
+        {% for label, url in breadcrumbs %}
+            <a href="{{ url }}" class="breadcrumb-link">{{ label }}</a>
+            {% if not loop.last %} &gt; {% endif %}
+        {% endfor %}
+    </div>
 <div class="wrapper">
     <nav class="sidebar">
-        <h3 class="text-white">SociaLens Ɑv.1.0</h3>
+        <h3 class="text-white">SociaLens Ɑv.1.1</h3>
         <ul class="nav flex-column">
-            <li class="nav-item"><a href="/" class="nav-link">🏠 Home</a></li>
-            <li class="nav-item"><a href="/data-upload" class="nav-link">☁️ Data Upload</a></li>
-            <li class="nav-item"><a href="/datasets" class="nav-link">📀 Datasets</a></li>
-            <li class="nav-item"><a href="/descriptive-statistics" class="nav-link">📊 Descriptive Statistics</a></li>
-            <li class="nav-item"><a href="/network-visualiser" class="nav-link">🕸️ Network Visualiser</a></li>
-            <li class="nav-item"><a href="/report-generator" class="nav-link">📄 Report Generator</a></li>
+            <li class="nav-item"><a href="/" class="nav-link {{ 'active' if request.path == '/' else '' }}">🏠 Home</a></li>
+            <li class="nav-item"><a href="/data-upload" class="nav-link {{ 'active' if request.path == '/data-upload' else '' }}">☁️ Data Upload</a></li>
+            <li class="nav-item"><a href="/explore-data" class="nav-link {{ 'active' if request.path == '/explore-data' else '' }}">🔎 Explore Data</a></li>
+            <li class="nav-item"><a href="/descriptive-statistics" class="nav-link {{ 'active' if request.path == '/descriptive-statistics' else '' }}">📊 Descriptive Statistics</a></li>
+            <li class="nav-item"><a href="/network-visualiser" class="nav-link {{ 'active' if request.path == '/network-visualiser' else '' }}">🕸️ Network Visualiser</a></li>
+            <li class="nav-item"><a href="/report-generator" class="nav-link {{ 'active' if request.path == '/report-generator' else '' }}">📄 Report Generator</a></li>
         </ul>
-    </nav>
+    </nav>    
     <div class="content">
         {% block content %}{% endblock %}
     </div>
