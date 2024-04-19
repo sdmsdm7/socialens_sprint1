@@ -60,6 +60,34 @@
             background: #f8f9fa;
             padding: 20px;
         }
+
+        label.check {
+            cursor: pointer;
+            padding: 2%;
+        }
+
+        label.check input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        label.check span {
+            padding: 7px 14px;
+            border: 2px solid #039BE5;
+            display: inline-block;
+            color: #039BE5;
+            border-radius: 3px;
+            text-transform: uppercase;
+        }
+
+        label.check input:checked + span {
+            border-color: #039BE5;
+            background-color: #039BE5;
+            color: #fff;
+        }
     </style>
     
     
@@ -73,7 +101,7 @@
     </div>
 <div class="wrapper">
     <nav class="sidebar">
-        <h3 class="text-white">SociaLens Ɑv.1.1</h3>
+        <h3 class="text-white">SociaLens Ɑv.1.2</h3>
         <ul class="nav flex-column">
             <li class="nav-item"><a href="/" class="nav-link {{ 'active' if request.path == '/' else '' }}">🏠 Home</a></li>
             <li class="nav-item"><a href="/data-upload" class="nav-link {{ 'active' if request.path == '/data-upload' else '' }}">☁️ Data Upload</a></li>

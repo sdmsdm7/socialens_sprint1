@@ -123,6 +123,13 @@ def network_visualiser():
 @app.route('/report-generator')
 def report_generator():
     breadcrumbs = [("Home", "/"), ("Report Generator", "/report-generator")]
+    files = []
+    for filename in os.listdir(app.config['UPLOAD_FOLDER']):
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        stats = os.stat(filepath)
+        files.append({
+            'name': filename,
+        })
     return render_template('report_generator.html', breadcrumbs=breadcrumbs)
 
 
