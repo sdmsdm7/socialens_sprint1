@@ -60,6 +60,9 @@ def datasets():
 def explore_data():
     breadcrumbs = [("Home", "/"), ("Explore Data", "/explore-data")]
     files = [f for f in os.listdir(app.config['UPLOAD_FOLDER']) if allowed_file(f)]
+    if not files:
+        flash("No uploaded files found. Please upload a file first.", 'danger')
+        return render_template('explore_data.html', files=files, breadcrumbs=breadcrumbs, error_message="No uploaded files found.")
     return render_template('explore_data.html', files=files, breadcrumbs=breadcrumbs)
 
 @app.route('/analyze-data', methods=['POST'])
@@ -97,6 +100,9 @@ def analyze_data():
 def descriptive_statistics():
     breadcrumbs = [("Home", "/"), ("Descriptive Statistics", "/descriptive-statistics")]
     files = [f for f in os.listdir(app.config['UPLOAD_FOLDER']) if allowed_file(f)]
+    if not files:
+        flash("No uploaded files found. Please upload a file first.", 'danger')
+        return render_template('descriptive_statistics.html', files=files, breadcrumbs=breadcrumbs, error_message="No uploaded files found.")
     return render_template('descriptive_statistics.html', files=files, breadcrumbs=breadcrumbs)
 
 @app.route('/descriptive-statistics-viewer')
@@ -132,6 +138,25 @@ def report_generator():
         })
     return render_template('report_generator.html', breadcrumbs=breadcrumbs)
 
+@app.route('/user-profile')
+def user_profile():
+    breadcrumbs = [("Home", "/"), ("User Profile", "/user-profile")]
+    return render_template('user_profile.html', breadcrumbs=breadcrumbs)
+
+@app.route('/settings')
+def settings():
+    breadcrumbs = [("Home", "/"), ("Settings", "/settings")]
+    return render_template('settings.html', breadcrumbs=breadcrumbs)
+
+@app.route('/support')
+def support():
+    breadcrumbs = [("Home", "/"), ("Support", "/support")]
+    return render_template('support.html', breadcrumbs=breadcrumbs)
+
+@app.route('/feedback')
+def feedback():
+    breadcrumbs = [("Home", "/"), ("Feedback", "/feedback")]
+    return render_template('feedback.html', breadcrumbs=breadcrumbs)
 
 if __name__ == '__main__':
     app.run(debug=True)

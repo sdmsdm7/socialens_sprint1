@@ -13,7 +13,7 @@
     
         .wrapper {
             display: flex;
-            height: 100%;
+            min-height: 100vh;
         }
 
         .top-bar {
@@ -22,13 +22,16 @@
             color: white;
             padding: 5px 20px; /* Minimal padding for a narrow bar */
             text-align: left;
+            position: fixed;
+            top: 0; 
+            z-index:3;
         }
     
         .sidebar {
             min-width: 250px;
             background: #013B7A; /* Consistent background color */
             color: white;
-            padding: 15px;
+            padding: 40px 15px 15px 15px;
             position: sticky; /* Make sidebar sticky */
             top: 0; /* Start sticking at the top of the viewport */
             height: 100vh; /* Optional: to make the sidebar take full viewport height */
@@ -58,7 +61,7 @@
         .content {
             flex-grow: 1;
             background: #f8f9fa;
-            padding: 20px;
+            padding: 35px 20px 20px 20px;
         }
 
         label.check {
@@ -157,6 +160,13 @@
             <li class="nav-item"><a href="/descriptive-statistics" class="nav-link {{ 'active' if request.path == '/descriptive-statistics' else '' }}">📊 Descriptive Statistics</a></li>
             <li class="nav-item"><a href="/network-visualiser" class="nav-link {{ 'active' if request.path == '/network-visualiser' else '' }}">🕸️ Network Visualiser</a></li>
             <li class="nav-item"><a href="/report-generator" class="nav-link {{ 'active' if request.path == '/report-generator' else '' }}">📄 Report Generator</a></li>
+            <hr>
+        </ul>
+        <ul class="nav flex-column">
+            <li class="nav-item"><a href="/user-profile" class="nav-link {{ 'active' if request.path == '/user-profile' else '' }}">👤 User Profile</a></li>
+            <li class="nav-item"><a href="/settings" class="nav-link {{ 'active' if request.path == '/settings' else '' }}">⚙️ Settings</a></li>
+            <li class="nav-item"><a href="/support" class="nav-link {{ 'active' if request.path == '/support' else '' }}">🛠️ Support</a></li>
+            <li class="nav-item"><a href="/feedback" class="nav-link {{ 'active' if request.path == '/feedback' else '' }}">💬 Feedback</a></li>
         </ul>
     </nav>    
     <div class="content">
