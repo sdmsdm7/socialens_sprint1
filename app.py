@@ -138,10 +138,10 @@ def report_generator():
         })
     return render_template('report_generator.html', breadcrumbs=breadcrumbs)
 
-@app.route('/user-profile')
+@app.route('/login')
 def user_profile():
-    breadcrumbs = [("Home", "/"), ("User Profile", "/user-profile")]
-    return render_template('user_profile.html', breadcrumbs=breadcrumbs)
+    breadcrumbs = [("Home", "/"), ("Login", "/login")]
+    return render_template('login.html', breadcrumbs=breadcrumbs)
 
 @app.route('/settings')
 def settings():

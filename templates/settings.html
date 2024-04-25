@@ -3,5 +3,35 @@
 {% block title %}Settings{% endblock %}
 
 {% block content %}
-<h3>Build Me!</h3>
+<h1>Settings</h1>
+<div class="container">
+  <form id="settingsForm">
+    <div class="mb-3">
+      <label for="notifications" class="form-label">Notifications:</label>
+      <select id="notifications" class="form-select">
+        <option value="enabled">Enabled</option>
+        <option value="disabled">Disabled</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="theme" class="form-label">Theme:</label>
+      <select id="theme" class="form-select">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="language" class="form-label">Language:</label>
+      <select id="language" class="form-select">
+        <option value="english">English</option>
+        <option value="spanish">Spanish</option>
+        <option value="french">French</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+  </form>
+</div>
 {% endblock %}
