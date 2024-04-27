@@ -1,10 +1,10 @@
+from flask import Flask, jsonify, send_from_directory
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from werkzeug.utils import secure_filename
 import os
+import json
 from datetime import datetime
 import pandas as pd
-import json
-# referencing an external py file
 from descriptive_statistics import analyze_file  
 
 app = Flask(__name__)
@@ -15,22 +15,16 @@ UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'csv', 'xlsx', 'xls'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB upload limit
-# Set the path for the JSON folder
+
+# Set the path for the json folder
 JSON_FOLDER = 'json_objects'
 JSON_EXTENSIONS = {'json'}
 app.config['JSON_FOLDER'] = JSON_FOLDER
 os.makedirs(JSON_FOLDER, exist_ok=True)
+
 # Ensure the upload directory exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-# HOME PAGE ROUTE
-@app.route('/')
-def home():
-    breadcrumbs = [("Home", "/")]
-    return render_template('index.html', breadcrumbs=breadcrumbs)
-# CONVERT STATS TO JSON OBJECTS
 # Function to convert statistical results to JSON format
 def create_json_graph(file_path):
     try:
@@ -66,51 +60,42 @@ def create_json_graph(file_path):
 
     except Exception as e:
         return {'error': str(e)}, None
-# DROP SHEET IF NAN VALUES DETECTED 
-# Function to drop sheets containing NaN values from Excel files
-def drop_nan_sheets(file_path):
-    # Check if the file is an Excel file
-    if not file_path.endswith(('.xlsx', '.xls')):
-        return None, 'Unsupported file format'
+    
+# Function to check if file has allowed extension
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-    # Load the Excel file
-    xls = pd.ExcelFile(file_path)
+@app.route('/')
+def home():
+    breadcrumbs = [("Home", "/")]
+    return render_template('index.html', breadcrumbs=breadcrumbs)
 
-    # Read all sheets and drop sheets containing NaN values
-    sheets = {}
-    for sheet_name in xls.sheet_names:
-        df = xls.parse(sheet_name)
-        if not df.isnull().values.any():
-            sheets[sheet_name] = df
 
-    # Check if any sheets were dropped
-    if len(sheets) < len(xls.sheet_names):
-        # Overwrite the original Excel file
-        with pd.ExcelWriter(file_path) as writer:
-            for sheet_name, df in sheets.items():
-                df.to_excel(writer, sheet_name=sheet_name, index=False)
-
-        return file_path, 'Sheets containing NaN values dropped successfully'
-    else:
-        return None, 'No sheets containing NaN values found'
-# DATA UPLOAD ROUTE
+# Route for uploading data files
 @app.route('/data-upload', methods=['GET', 'POST'])
 def data_upload():
     breadcrumbs = [("Home", "/"), ("Data Upload", "/data-upload")]
+    files_info = []
+
     if request.method == 'POST':
         file = request.files['dataFile']
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            flash(f'😄 File {filename} uploaded successfully! Good on you!', 'success')
-    files = os.listdir(app.config['UPLOAD_FOLDER'])
-    files_info = [{
-        'name': file,
-        'size': f"{os.stat(os.path.join(app.config['UPLOAD_FOLDER'], file)).st_size / 1024:.2f} KB",
-        'upload_time': datetime.fromtimestamp(os.stat(os.path.join(app.config['UPLOAD_FOLDER'], file)).st_mtime).strftime('%Y-%m-%d %H:%M:%S')
-    } for file in files]
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+            
+            
+            # Update files info
+            files = os.listdir(app.config['UPLOAD_FOLDER'])
+            files_info = [{
+                 'name': file,
+                 'size': f"{os.stat(os.path.join(app.config['UPLOAD_FOLDER'], file)).st_size / 1024:.2f} KB",
+                 'upload_time': datetime.fromtimestamp(os.stat(os.path.join(app.config['UPLOAD_FOLDER'], file)).st_mtime).strftime('%Y-%m-%d %H:%M:%S')
+            } for file in files]
+
     return render_template('data_upload.html', breadcrumbs=breadcrumbs, files=files_info)
-# SHOW UPLOADED DATASETS
+
+
 @app.route('/datasets')
 def datasets():
     files = []
@@ -123,7 +108,7 @@ def datasets():
             'upload_time': datetime.fromtimestamp(stats.st_mtime).strftime('%Y-%m-%d %H:%M:%S')
         })
     return render_template('datasets.html', files=files)
-# EXPLORE RAW UPLOADED DATE
+
 @app.route('/explore-data')
 def explore_data():
     breadcrumbs = [("Home", "/"), ("Explore Data", "/explore-data")]
@@ -132,7 +117,8 @@ def explore_data():
         flash("No uploaded files found. Please upload a file first.", 'danger')
         return render_template('explore_data.html', files=files, breadcrumbs=breadcrumbs, error_message="No uploaded files found.")
     return render_template('explore_data.html', files=files, breadcrumbs=breadcrumbs)
-# READ UPLOADED DATA
+
+# Route for analyzing data
 @app.route('/analyze-data', methods=['POST'])
 def analyze_data():
     selected_file = request.form.get('selectedFile')
@@ -170,6 +156,7 @@ def analyze_data():
         return redirect(url_for('explore_data'))
 
     return render_template('analysis_results.html', tables_html=tables_html, filename=selected_file, sheet_names=list(tables_html.keys()), json_data=json_data, breadcrumbs=breadcrumbs)
+
 # Route for listing JSON files
 @app.route('/list_files', methods=['GET'])
 def list_files():
@@ -207,14 +194,12 @@ def descriptive_statistics():
     
     return render_template('descriptive_statistics.html', files=files, stats=stats, json_files=json_files, breadcrumbs=breadcrumbs)
 
-# Route for descriptive statistics viewer
 @app.route('/descriptive-statistics-viewer')
 def descriptive_statistics_viewer():
     breadcrumbs = [("Home", "/"), ("Descriptive Statistics Viewer", "/descriptive-statistics-viewer")]
     files = [f for f in os.listdir(app.config['UPLOAD_FOLDER']) if f.endswith(('.xlsx', '.xls', '.csv'))]  # Filter to include only relevant file types
     return render_template('descriptive_statistics_viewer.html', files=files, breadcrumbs=breadcrumbs)
 
-# Route for analyzing a specific file
 @app.route('/analyze/<filename>')
 def analyze(filename):
     breadcrumbs = [("Home", "/"), ("Descriptive Statistics", "/descriptive-statistics"), ("View Statistics", "/")]
@@ -223,34 +208,13 @@ def analyze(filename):
         flash("File does not exist.", 'danger')
         return redirect(url_for('descriptive_statistics'))
     results = analyze_file(file_path)
-    return render_template('view_statistics.html', filename=filename, results= results,breadcrumbs=breadcrumbs)
+    return render_template('view_statistics.html', filename=filename, results=results, breadcrumbs=breadcrumbs)
 
-
-# Route for descriptive statistics
 @app.route('/network-visualiser')
 def network_visualiser():
-    breadcrumbs = [("Home", "/"), ("Network Visualiser", "/Network Visualiser")]
-    files = [f for f in os.listdir(app.config['UPLOAD_FOLDER']) if allowed_file(f)]
-    stats = {}
-    json_files = {}
-    
-    for file in files:
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file)
-        stats[file], json_files[file] = create_json_graph(file_path)
+    breadcrumbs = [("Home", "/"), ("Network Visualiser", "/network-visualiser")]
+    return render_template('network_visualiser.html', breadcrumbs=breadcrumbs)
 
-        # Call create_json_graph to print JSON data to console
-        print(f"JSON data for {file}:")
-        print(stats[file])
-    
-    return render_template('network_visualiser.html', files=files, stats=stats, json_files=json_files, breadcrumbs=breadcrumbs)
-
-# Route for serving static JSON files
-@app.route('/json_objects/<path:filename>')
-def serve_static(filename):
-    return send_from_directory(app.config['JSON_FOLDER'], filename)
-# VISUALISE NETWORK
-
-# GENERATE REPORTS
 @app.route('/report-generator')
 def report_generator():
     breadcrumbs = [("Home", "/"), ("Report Generator", "/report-generator")]
