@@ -4,6 +4,15 @@
 
 {% block content %}
 <h1>Select a Dataset for Analysis</h1>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
 <ul class="list-group">
     {% for file in files %}
     <li class="list-group-item">
