@@ -247,5 +247,29 @@ def feedback():
     breadcrumbs = [("Home", "/"), ("Feedback", "/feedback")]
     return render_template('feedback.html', breadcrumbs=breadcrumbs)
 
+@app.route('/get_available_datasets')
+def get_available_datasets():
+    files = [f for f in os.listdir(app.config['UPLOAD_FOLDER']) if allowed_file(f)]
+    return jsonify(files)
+
+@app.route('/get_sheets/<dataset>')
+def get_sheets(dataset):
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], dataset)
+    if not os.path.exists(file_path):
+        return jsonify([])  # Return an empty list if the file doesn't exist
+    
+    # Check the file extension and read accordingly
+    if dataset.endswith(('.xlsx', '.xls')):
+        # Read all sheets; each sheet's name is added to a list
+        xls = pd.ExcelFile(file_path)
+        sheets = xls.sheet_names
+    elif dataset.endswith('.csv'):
+        # For CSV files, there's only one sheet, so return a list containing 'CSV'
+        sheets = ['CSV']
+    else:
+        return jsonify([])  # Unsupported file format, return an empty list
+
+    return jsonify(sheets)
+
 if __name__ == '__main__':
     app.run(debug=True)
